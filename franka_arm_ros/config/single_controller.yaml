@@ -1,0 +1,9 @@
+panda:
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50
+
+  joint1_position_controller:
+    type: franka_arm_ros/PDController
+    joint: $(arg arm_id)_joint1
+    pid: { p: 100.0, i: 0.01, d: 10.0 }

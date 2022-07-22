@@ -3,6 +3,8 @@ project(franka_arm_ros)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -15,11 +17,9 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   hardware_interface
   joint_limits_interface
-  message_generation
   pluginlib
   realtime_tools
   roscpp
-  rospy
   tf
   tf_conversions
   urdf
@@ -28,6 +28,10 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
+find_package(Franka 0.9.0 QUIET)
+if(NOT Franka_FOUND)
+  find_package(Franka 0.8.0 REQUIRED)
+endif()
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -116,10 +120,10 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES franka_arm_ros
-#  CATKIN_DEPENDS controller_interface dynamic_reconfigure franka_gripper franka_hw geometry_msgs hardware_interface joint_limits_interface message_generation pluginlib realtime_tools roscpp rospy tf tf_conversions urdf visualization_msgs
-#  DEPENDS system_lib
+ INCLUDE_DIRS include
+ LIBRARIES franka_arm_ros
+ CATKIN_DEPENDS controller_interface dynamic_reconfigure franka_gripper franka_hw geometry_msgs hardware_interface joint_limits_interface pluginlib realtime_tools roscpp tf tf_conversions urdf visualization_msgs
+ DEPENDS Franka
 )
 
 ###########
@@ -129,7 +133,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -137,6 +141,8 @@ include_directories(
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/franka_arm_ros.cpp
 # )
+
+add_library(franka_arm_ros_lib src/pd_controller.cpp)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -162,6 +168,7 @@ include_directories(
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
+target_link_libraries(franka_arm_ros_lib ${catkin_LIBRARIES})
 
 #############
 ## Install ##

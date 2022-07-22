@@ -36,9 +36,11 @@
     </include>
 
     <!-- Spawns robot URDF model to Gazebo -->
-    <param name="robot_description" command="cat $(find franka_arm_ros)/robots/panda_arm_effort.urdf"/>
+    <param name="robot_description" command="cat $(find franka_arm_ros)/robots/panda_arm.urdf"/>
 
     <rosparam file="$(find franka_gazebo)/config/franka_hw_sim.yaml" subst_value="true" />
+    <rosparam file="$(find franka_gazebo)/config/sim_controllers.yaml" subst_value="true" />
+    <rosparam file="$(find franka_arm_ros)/config/single_controller.yaml" subst_value="true" />
 
     <param name="m_ee" value="0.76" if="$(arg use_gripper)" />
     <arg name="unpause" value="$(eval '' if arg('paused') else '-unpause')" />
