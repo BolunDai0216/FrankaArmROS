@@ -1,5 +1,3 @@
-// Copyright (c) 2017 Franka Emika GmbH
-// Use of this source code is governed by the Apache-2.0 license, see LICENSE
 #include <franka_arm_ros/pd_controller.h>
 
 #include <cmath>
@@ -8,7 +6,7 @@
 #include <hardware_interface/hardware_interface.h>
 #include <hardware_interface/joint_command_interface.h>
 #include <pluginlib/class_list_macros.h>
-#include <ros/ros.h>
+#include <ros/ros.h>  
 
 namespace franka_arm_ros {
 
@@ -33,7 +31,7 @@ bool PDController::init(hardware_interface::RobotHW* robot_hardware,
     return false;
   }
 
-  // check if joint_handle got each joint
+  // check if joint_handle got each joint (crucial step of avoiding could not switch controller error)
   effort_joint_handles_.resize(7);
   for (size_t i = 0; i < 7; ++i) {
     try {
@@ -53,10 +51,11 @@ void PDController::starting(const ros::Time& /* time */) {
 }
 
 void PDController::update(const ros::Time& /*time*/, const ros::Duration& period) {
-    int i = 0;
+  for (size_t i = 0; i < 7; ++i) {
+    effort_joint_handles_[i].setCommand(0.01);
+  }
 }
 
 }  // namespace franka_arm_ros
 
-PLUGINLIB_EXPORT_CLASS(franka_arm_ros::PDController,
-                       controller_interface::ControllerBase)
+PLUGINLIB_EXPORT_CLASS(franka_arm_ros::PDController, controller_interface::ControllerBase)

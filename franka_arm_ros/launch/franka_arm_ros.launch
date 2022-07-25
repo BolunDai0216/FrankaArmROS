@@ -52,7 +52,7 @@
     <node pkg="controller_manager" type="spawner" name="$(arg arm_id)_gripper_spawner" if="$(arg use_gripper)" args="franka_gripper" respawn="false" />
 
     <!-- spawns the controller after the robot was put into its initial joint pose -->
-    <node pkg="controller_manager" type="spawner" name="$(arg arm_id)_controller_spawner" respawn="false" output="screen" args="franka_state_controller $(arg controller)" />
+    <node pkg="controller_manager" type="spawner" name="$(arg arm_id)_controller_spawner" respawn="false" output="screen" args="--wait-for initialized franka_state_controller $(arg controller)" />
 
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
     <node name="joint_state_publisher" type="joint_state_publisher" pkg="joint_state_publisher">
