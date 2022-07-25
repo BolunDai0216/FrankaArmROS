@@ -18,3 +18,28 @@ we can see that the controllers are not activated unless the topic `/initialized
 ```console
 rostopic pub /initialized std_msgs/Bool "data: true"
 ```
+
+More regarding `spawner` can be found in its help message
+
+```console
+>>> rosrun controller_manager spawner -h
+usage: spawner [-h] [--stopped] [--wait-for topic] [--namespace ns] [--timeout T] [--no-timeout]
+               [--shutdown-timeout SHUTDOWN_TIMEOUT]
+               controller [controller ...]
+
+Controller spawner
+
+positional arguments:
+  controller            controllers to load
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --stopped             loads controllers, but does not start them
+  --wait-for topic      does not load or start controllers until it hears "True" on a topic (Bool)
+  --namespace ns        namespace of the controller_manager services
+  --timeout T           how long to wait for controller_manager services when starting up [s] (default: 30). <=0 waits
+                        indefinitely.
+  --no-timeout          wait for controller_manager services indefinitely (same as `--timeout 0`)
+  --shutdown-timeout SHUTDOWN_TIMEOUT
+                        DEPRECATED: this argument has no effect.
+```
