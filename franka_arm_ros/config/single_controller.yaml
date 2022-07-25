@@ -3,7 +3,14 @@ panda:
     type: joint_state_controller/JointStateController
     publish_rate: 50
 
-  joint1_position_controller:
+  pd_controller:
     type: franka_arm_ros/PDController
-    joint: $(arg arm_id)_joint1
-    pid: { p: 100.0, i: 0.01, d: 10.0 }
+    arm_id: panda
+    joint_names:
+      - panda_joint1
+      - panda_joint2
+      - panda_joint3
+      - panda_joint4
+      - panda_joint5
+      - panda_joint6
+      - panda_joint7
