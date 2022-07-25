@@ -10,14 +10,12 @@
 
 namespace franka_arm_ros {
 
-bool PDController::init(hardware_interface::RobotHW* robot_hardware,
+bool PDController::init(hardware_interface::RobotHW* robot_hw,
                                           ros::NodeHandle& node_handle) {
-  effort_joint_interface_ = robot_hardware->get<hardware_interface::EffortJointInterface>();
-  
-  // check if got effort_joint_interface 
-  if (effort_joint_interface_ == nullptr) {
-    ROS_ERROR(
-        "PDController: Error getting effort joint interface from hardware!");
+  // check if got arm_id
+  std::string arm_id;
+  if (!node_handle.getParam("arm_id", arm_id)) {
+    ROS_ERROR_STREAM("PDController: Could not read parameter arm_id");
     return false;
   }
   
@@ -30,15 +28,60 @@ bool PDController::init(hardware_interface::RobotHW* robot_hardware,
     ROS_ERROR_STREAM("PDController: Wrong number of joint names, got " << joint_names.size() << " instead of 7 names!");
     return false;
   }
+  
+  // check if model_handle_ works
+  auto* model_interface = robot_hw->get<franka_hw::FrankaModelInterface>();
+  
+  if (model_interface == nullptr) {
+    ROS_ERROR_STREAM(
+        "PDController: Error getting model interface from hardware");
+    return false;
+  }
 
-  // check if joint_handle got each joint (crucial step of avoiding could not switch controller error)
-  effort_joint_handles_.resize(7);
+  try {
+    model_handle_ = std::make_unique<franka_hw::FrankaModelHandle>(
+        model_interface->getHandle(arm_id + "_model"));
+  } catch (hardware_interface::HardwareInterfaceException& ex) {
+    ROS_ERROR_STREAM(
+        "PDController: Exception getting model handle from interface: "
+        << ex.what());
+    return false;
+  }
+
+  // check if state_handle_ works
+  auto* state_interface = robot_hw->get<franka_hw::FrankaStateInterface>();
+  
+  if (state_interface == nullptr) {
+    ROS_ERROR_STREAM(
+        "PDController: Error getting state interface from hardware");
+    return false;
+  }
+  
+  try {
+    state_handle_ = std::make_unique<franka_hw::FrankaStateHandle>(
+        state_interface->getHandle(arm_id + "_robot"));
+  } catch (hardware_interface::HardwareInterfaceException& ex) {
+    ROS_ERROR_STREAM(
+        "PDController: Exception getting state handle from interface: "
+        << ex.what());
+    return false;
+  }
+
+  // check if joint_handles_ got each joint (crucial step of avoiding could not switch controller error)
+  auto* effort_joint_interface = robot_hw->get<hardware_interface::EffortJointInterface>();
+  
+  if (effort_joint_interface == nullptr) {
+    ROS_ERROR_STREAM(
+        "PDController: Error getting effort joint interface from hardware");
+    return false;
+  }
+  
   for (size_t i = 0; i < 7; ++i) {
     try {
-      effort_joint_handles_[i] = effort_joint_interface_->getHandle(joint_names[i]);
-    } catch (const hardware_interface::HardwareInterfaceException& e) {
+      joint_handles_.push_back(effort_joint_interface->getHandle(joint_names[i]));
+    } catch (const hardware_interface::HardwareInterfaceException& ex) {
       ROS_ERROR_STREAM(
-          "PDController: Exception getting joint handles: " << e.what());
+          "PDController: Exception getting joint handles: " << ex.what());
       return false;
     }
   }
@@ -52,7 +95,7 @@ void PDController::starting(const ros::Time& /* time */) {
 
 void PDController::update(const ros::Time& /*time*/, const ros::Duration& period) {
   for (size_t i = 0; i < 7; ++i) {
-    effort_joint_handles_[i].setCommand(0.01);
+    joint_handles_[i].setCommand(0.01);
   }
 }
 
