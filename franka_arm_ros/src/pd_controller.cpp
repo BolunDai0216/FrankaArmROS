@@ -2,11 +2,11 @@
 
 #include <cmath>
 
-#include <controller_interface/controller_base.h>
+#include <controller_interface/controller_base.h> 
 #include <hardware_interface/hardware_interface.h>
 #include <hardware_interface/joint_command_interface.h>
 #include <pluginlib/class_list_macros.h>
-#include <ros/ros.h>  
+#include <ros/ros.h>   
 
 namespace franka_arm_ros {
 
@@ -94,8 +94,21 @@ void PDController::starting(const ros::Time& /* time */) {
 }
 
 void PDController::update(const ros::Time& /*time*/, const ros::Duration& period) {
+  // get state variables
+  franka::RobotState robot_state = state_handle_->getRobotState();
+  std::array<double, 7> coriolis_array = model_handle_->getCoriolis();
+  std::array<double, 7> gravity_array = model_handle_->getGravity();
+
+  // get target joint angles
+  std::array<double, 7> target_array = {0, -0.785398163, 0, -2.35619449, 0, 1.57079632679, 0.785398163397};
+
+  // get joint angles and angular velocities
+  auto q = robot_state.q.data();
+  auto dq = robot_state.dq.data();
+
+  // set torque
   for (size_t i = 0; i < 7; ++i) {
-    joint_handles_[i].setCommand(0.01);
+    joint_handles_[i].setCommand(coriolis_array[i] + 10 * (target_array[i] - q[i]) + 10 * (0 - dq[i]));
   }
 }
 
