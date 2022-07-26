@@ -16,6 +16,8 @@
 #include <franka_hw/franka_state_interface.h>
 #include <franka_hw/trigger_rate.h>
 
+#include <Eigen/Dense>
+
 namespace franka_arm_ros {
 
 class PDController : public controller_interface::MultiInterfaceController<franka_hw::FrankaModelInterface, 

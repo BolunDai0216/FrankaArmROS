@@ -12,6 +12,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(catkin REQUIRED COMPONENTS
   controller_interface
   dynamic_reconfigure
+  eigen_conversions
   franka_gripper
   franka_hw
   geometry_msgs
@@ -28,6 +29,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
+find_package(Eigen3 REQUIRED)
 find_package(Franka 0.9.0 QUIET)
 if(NOT Franka_FOUND)
   find_package(Franka 0.8.0 REQUIRED)
@@ -122,7 +124,7 @@ endif()
 catkin_package(
  INCLUDE_DIRS include
  LIBRARIES franka_arm_ros
- CATKIN_DEPENDS controller_interface dynamic_reconfigure franka_gripper franka_hw geometry_msgs hardware_interface joint_limits_interface pluginlib realtime_tools roscpp tf tf_conversions urdf visualization_msgs
+ CATKIN_DEPENDS controller_interface dynamic_reconfigure eigen_conversions franka_gripper franka_hw geometry_msgs hardware_interface joint_limits_interface pluginlib realtime_tools roscpp tf tf_conversions urdf visualization_msgs
  DEPENDS Franka
 )
 

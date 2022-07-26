@@ -95,20 +95,23 @@ void PDController::starting(const ros::Time& /* time */) {
 
 void PDController::update(const ros::Time& /*time*/, const ros::Duration& period) {
   // get state variables
-  franka::RobotState robot_state = state_handle_->getRobotState();
   std::array<double, 7> coriolis_array = model_handle_->getCoriolis();
-  std::array<double, 7> gravity_array = model_handle_->getGravity();
+  Eigen::Map<Eigen::Matrix<double, 7, 1>> coriolis(coriolis_array.data());
 
   // get target joint angles
-  std::array<double, 7> target_array = {0, -0.785398163, 0, -2.35619449, 0, 1.57079632679, 0.785398163397};
+  std::array<double, 7> target_array = {0.5, -0.785398163, 0, -2.35619449, 0, 1.57079632679, 0.785398163397};
+  Eigen::Map<Eigen::Matrix<double, 7, 1>> target(target_array.data());
 
   // get joint angles and angular velocities
-  auto q = robot_state.q.data();
-  auto dq = robot_state.dq.data();
+  franka::RobotState robot_state = state_handle_->getRobotState();
+  Eigen::Map<Eigen::Matrix<double, 7, 1>> q(robot_state.q.data());
+  Eigen::Map<Eigen::Matrix<double, 7, 1>> dq(robot_state.dq.data());
+
+  Eigen::Matrix<double, 7, 1> torques = coriolis + 10 * (target - q) - 10 * dq; 
 
   // set torque
   for (size_t i = 0; i < 7; ++i) {
-    joint_handles_[i].setCommand(coriolis_array[i] + 10 * (target_array[i] - q[i]) + 10 * (0 - dq[i]));
+    joint_handles_[i].setCommand(torques[i]);
   }
 }
 
