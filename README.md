@@ -1,5 +1,13 @@
 # FrankaArmROS
 
+## Run the PD controller
+
+To run the PD controller, use the command
+
+```console
+roslaunch franka_arm_ros franka_arm_ros.launch controller:=panda/pd_controller
+```
+
 ## How to start simulation
 
 If we take a look at this tag:
