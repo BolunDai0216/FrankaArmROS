@@ -30,6 +30,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 find_package(Eigen3 REQUIRED)
+find_package(pinocchio REQUIRED)
 find_package(Franka 0.9.0 QUIET)
 if(NOT Franka_FOUND)
   find_package(Franka 0.8.0 REQUIRED)
@@ -170,7 +171,7 @@ add_library(franka_arm_ros_lib src/pd_controller.cpp)
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(franka_arm_ros_lib ${catkin_LIBRARIES})
+target_link_libraries(franka_arm_ros_lib pinocchio::pinocchio ${catkin_LIBRARIES})
 
 #############
 ## Install ##

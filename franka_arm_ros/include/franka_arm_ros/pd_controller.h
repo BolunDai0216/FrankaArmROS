@@ -1,5 +1,9 @@
 #pragma once
 
+#include <pinocchio/parsers/sample-models.hpp>
+#include <pinocchio/algorithm/joint-configuration.hpp>
+#include <pinocchio/algorithm/rnea.hpp>
+
 #include <array>
 #include <string>
 #include <vector>
@@ -29,6 +33,7 @@ class PDController : public controller_interface::MultiInterfaceController<frank
   void update(const ros::Time&, const ros::Duration& period) override;
 
  private:
+  pinocchio::Model model;
   std::unique_ptr<franka_hw::FrankaStateHandle> state_handle_;
   std::unique_ptr<franka_hw::FrankaModelHandle> model_handle_;
   std::vector<hardware_interface::JointHandle> joint_handles_;
