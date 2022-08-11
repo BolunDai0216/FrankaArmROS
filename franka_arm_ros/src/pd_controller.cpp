@@ -145,6 +145,8 @@ void PDController::starting(const ros::Time& /* time */) {
     x_traj_coeff = time_mat.colPivHouseholderQr().solve(x_traj_cond_mat);
     y_traj_coeff = time_mat.colPivHouseholderQr().solve(y_traj_cond_mat);
     z_traj_coeff = time_mat.colPivHouseholderQr().solve(z_traj_cond_mat);
+
+    firstUpdate = false;
 }
 
 void PDController::update(const ros::Time& /*time*/, const ros::Duration& period) {
@@ -158,7 +160,12 @@ void PDController::update(const ros::Time& /*time*/, const ros::Duration& period
   pinocchio::updateFramePlacements(model, data);
 
   // get time
-  t = ros::Time::now().toSec();
+  if (!firstUpdate) {
+    firstUpdate = true;
+    start_t = ros::Time::now().toSec();
+  }
+  t = ros::Time::now().toSec() - start_t;
+
 
   // get state variables
   std::array<double, 7> coriolis_array = model_handle_->getCoriolis();

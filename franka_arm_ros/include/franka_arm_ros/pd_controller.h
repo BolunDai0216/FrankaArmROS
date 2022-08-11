@@ -73,6 +73,7 @@ class PDController : public controller_interface::MultiInterfaceController<frank
 
   double terminal_time;
   double t;
+  double start_t;
 
   Eigen::Matrix<double, 6, 6> time_mat;
 
@@ -118,6 +119,8 @@ class PDController : public controller_interface::MultiInterfaceController<frank
 
   geometry_msgs::Vector3Stamped ee_desired_pos;
   geometry_msgs::Vector3Stamped ee_measured_pos;
+
+  bool firstUpdate;
 };
 
 }  // namespace franka_arm_ros
