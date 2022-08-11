@@ -120,7 +120,7 @@ class PDController : public controller_interface::MultiInterfaceController<frank
   geometry_msgs::Vector3Stamped ee_desired_pos;
   geometry_msgs::Vector3Stamped ee_measured_pos;
 
-  bool firstUpdate;
+  bool notFirstUpdate;
 };
 
 }  // namespace franka_arm_ros

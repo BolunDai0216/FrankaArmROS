@@ -146,7 +146,7 @@ void PDController::starting(const ros::Time& /* time */) {
     y_traj_coeff = time_mat.colPivHouseholderQr().solve(y_traj_cond_mat);
     z_traj_coeff = time_mat.colPivHouseholderQr().solve(z_traj_cond_mat);
 
-    firstUpdate = false;
+    notFirstUpdate = false;
 }
 
 void PDController::update(const ros::Time& /*time*/, const ros::Duration& period) {
@@ -160,8 +160,8 @@ void PDController::update(const ros::Time& /*time*/, const ros::Duration& period
   pinocchio::updateFramePlacements(model, data);
 
   // get time
-  if (!firstUpdate) {
-    firstUpdate = true;
+  if (!notFirstUpdate) {
+    notFirstUpdate = true;
     start_t = ros::Time::now().toSec();
   }
   t = ros::Time::now().toSec() - start_t;
@@ -223,11 +223,7 @@ void PDController::update(const ros::Time& /*time*/, const ros::Duration& period
   Eigen::Map<Eigen::Matrix<double, 7, 7>> M(mass_array.data()); 
 
   // compute PD controller
-  torques = M * ddq_desired + kp_delta_q * delta_q + kd_delta_dq * delta_dq + coriolis - kd_dq * dq; 
-
-  // unused printing for debug
-  // std::cout << data.oMf[ee_frame_id].translation() << std::endl;
-  // std::cout << "*******" << std::endl;
+  torques = M * (ddq_desired + kp_delta_q * delta_q + kd_delta_dq * delta_dq) + coriolis - kd_dq * dq; 
 
   // set torque
   for (size_t i = 0; i < 7; ++i) {
