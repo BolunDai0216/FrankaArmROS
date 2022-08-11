@@ -1,5 +1,31 @@
 # FrankaArmROS
 
+## Install Eigen 3.4.0
+
+This repo requires the installation of `eigen v3.4.0`. To install Eigen, first download the `.zip` file from its official website.
+
+```console
+wget https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.zip
+```
+
+Then, unzip it
+
+```console
+unzip eigen-3.4.0.zip
+```
+
+Then, `cd eigen-3.4.0`, and follow the steps in `INSTALL`. I did the following steps
+
+```console
+mkdir build_dir
+cd build_dir
+cmake ..
+sudo make install
+```
+
+This will install `eigen` in the directory `/usr/local/include`, when creating `CMakeLists.txt`, remember to include the command `include_directories("/usr/local/include/eigen3")` to use `eigen v3.4.0`.
+
+
 ## Run the PD controller
 
 To run the PD controller, use the command
