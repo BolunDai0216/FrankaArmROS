@@ -9,7 +9,7 @@
     <arg name="arm_id" default="panda" doc="Name of the panda robot to spawn" />
     <arg name="use_gripper" default="true" doc="Should a franka hand be mounted on the flange?" />
     <arg name="controller" default=" " doc="Which example controller should be started? (One of {cartesian_impedance,model,force,joint_position,joint_velocity}_example_controller)" />
-    <arg name="x" default="0.5" doc="How far forward to place the base of the robot in [m]?" />
+    <arg name="x" default="0.0" doc="How far forward to place the base of the robot in [m]?" />
     <arg name="y" default="0" doc="How far leftwards to place the base of the robot in [m]?" />
     <arg name="z" default="0" doc="How far upwards to place the base of the robot in [m]?" />
     <arg name="roll" default="0" doc="How much to rotate the base of the robot around its X-axis in [rad]?" />
@@ -47,7 +47,8 @@
     </include>
 
     <!-- Spawns robot URDF model to Gazebo -->
-    <param name="robot_description" command="cat $(find franka_arm_ros)/robots/panda_arm.urdf"/>
+    <param name="robot_description" command="xacro $(find franka_description)/robots/panda_arm.urdf.xacro gazebo:=true hand:=$(arg use_gripper) arm_id:=$(arg arm_id) xyz:='$(arg x) $(arg y) $(arg z)' rpy:='$(arg roll) $(arg pitch) $(arg yaw)'">
+    </param>
 
     <rosparam file="$(find franka_gazebo)/config/franka_hw_sim.yaml" subst_value="true" />
     <rosparam file="$(find franka_gazebo)/config/sim_controllers.yaml" subst_value="true" />
