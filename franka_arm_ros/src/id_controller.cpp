@@ -222,7 +222,7 @@ void IDController::update(const ros::Time& /*time*/, const ros::Duration& period
   std::array<double, 49> mass_array = model_handle_->getMass();
   Eigen::Map<Eigen::Matrix<double, 7, 7>> M(mass_array.data()); 
 
-  // compute PD controller
+  // compute ID controller
   torques = M * (ddq_desired + kp_delta_q * delta_q + kd_delta_dq * delta_dq) + coriolis - kd_dq * dq; 
 
   // set torque
