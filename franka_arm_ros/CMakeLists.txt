@@ -5,6 +5,7 @@ project(franka_arm_ros)
 # add_compile_options(-std=c++11)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+include_directories("/usr/local/include/eigen3")
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
