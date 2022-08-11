@@ -3,8 +3,8 @@ panda:
     type: joint_state_controller/JointStateController
     publish_rate: 50
 
-  pd_controller:
-    type: franka_arm_ros/PDController
+  id_controller:
+    type: franka_arm_ros/IDController
     arm_id: panda
     joint_names:
       - panda_joint1

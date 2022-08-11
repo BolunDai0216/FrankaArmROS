@@ -148,7 +148,7 @@ include
 #   src/${PROJECT_NAME}/franka_arm_ros.cpp
 # )
 
-add_library(franka_arm_ros_lib src/pd_controller.cpp)
+add_library(franka_arm_ros_lib src/id_controller.cpp)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries

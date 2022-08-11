@@ -36,7 +36,7 @@
 
 namespace franka_arm_ros {
 
-class PDController : public controller_interface::MultiInterfaceController<franka_hw::FrankaModelInterface, 
+class IDController : public controller_interface::MultiInterfaceController<franka_hw::FrankaModelInterface, 
                                                                            hardware_interface::EffortJointInterface, 
                                                                            franka_hw::FrankaStateInterface> {
  public:

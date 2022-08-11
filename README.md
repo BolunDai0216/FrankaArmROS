@@ -26,12 +26,12 @@ sudo make install
 This will install `eigen` in the directory `/usr/local/include`, when creating `CMakeLists.txt`, remember to include the command `include_directories("/usr/local/include/eigen3")` to use `eigen v3.4.0`.
 
 
-## Run the PD controller
+## Run the inverse dynamics (ID) controller
 
-To run the PD controller, use the command
+To run the ID controller, use the command
 
 ```console
-roslaunch franka_arm_ros franka_arm_ros.launch controller:=panda/pd_controller
+roslaunch franka_arm_ros franka_arm_ros.launch controller:=panda/id_controller
 ```
 
 ## How to start simulation

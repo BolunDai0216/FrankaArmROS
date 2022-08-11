@@ -1,4 +1,4 @@
-#include <franka_arm_ros/pd_controller.h>
+#include <franka_arm_ros/id_controller.h>
 
 #include <cmath>
 
@@ -11,22 +11,22 @@
 
 namespace franka_arm_ros {
 
-bool PDController::init(hardware_interface::RobotHW* robot_hw,
+bool IDController::init(hardware_interface::RobotHW* robot_hw,
                                           ros::NodeHandle& node_handle) {
   // check if got arm_id
   std::string arm_id;
   if (!node_handle.getParam("arm_id", arm_id)) {
-    ROS_ERROR_STREAM("PDController: Could not read parameter arm_id");
+    ROS_ERROR_STREAM("IDController: Could not read parameter arm_id");
     return false;
   }
   
   // check if got joint_names
   std::vector<std::string> joint_names;
   if (!node_handle.getParam("joint_names", joint_names)) {
-    ROS_ERROR("PDController: Could not parse joint names");
+    ROS_ERROR("IDController: Could not parse joint names");
   }
   if (joint_names.size() != 7) {
-    ROS_ERROR_STREAM("PDController: Wrong number of joint names, got " << joint_names.size() << " instead of 7 names!");
+    ROS_ERROR_STREAM("IDController: Wrong number of joint names, got " << joint_names.size() << " instead of 7 names!");
     return false;
   }
   
@@ -35,7 +35,7 @@ bool PDController::init(hardware_interface::RobotHW* robot_hw,
   
   if (model_interface == nullptr) {
     ROS_ERROR_STREAM(
-        "PDController: Error getting model interface from hardware");
+        "IDController: Error getting model interface from hardware");
     return false;
   }
 
@@ -44,7 +44,7 @@ bool PDController::init(hardware_interface::RobotHW* robot_hw,
         model_interface->getHandle(arm_id + "_model"));
   } catch (hardware_interface::HardwareInterfaceException& ex) {
     ROS_ERROR_STREAM(
-        "PDController: Exception getting model handle from interface: "
+        "IDController: Exception getting model handle from interface: "
         << ex.what());
     return false;
   }
@@ -54,7 +54,7 @@ bool PDController::init(hardware_interface::RobotHW* robot_hw,
   
   if (state_interface == nullptr) {
     ROS_ERROR_STREAM(
-        "PDController: Error getting state interface from hardware");
+        "IDController: Error getting state interface from hardware");
     return false;
   }
   
@@ -63,7 +63,7 @@ bool PDController::init(hardware_interface::RobotHW* robot_hw,
         state_interface->getHandle(arm_id + "_robot"));
   } catch (hardware_interface::HardwareInterfaceException& ex) {
     ROS_ERROR_STREAM(
-        "PDController: Exception getting state handle from interface: "
+        "IDController: Exception getting state handle from interface: "
         << ex.what());
     return false;
   }
@@ -73,7 +73,7 @@ bool PDController::init(hardware_interface::RobotHW* robot_hw,
   
   if (effort_joint_interface == nullptr) {
     ROS_ERROR_STREAM(
-        "PDController: Error getting effort joint interface from hardware");
+        "IDController: Error getting effort joint interface from hardware");
     return false;
   }
   
@@ -82,7 +82,7 @@ bool PDController::init(hardware_interface::RobotHW* robot_hw,
       joint_handles_.push_back(effort_joint_interface->getHandle(joint_names[i]));
     } catch (const hardware_interface::HardwareInterfaceException& ex) {
       ROS_ERROR_STREAM(
-          "PDController: Exception getting joint handles: " << ex.what());
+          "IDController: Exception getting joint handles: " << ex.what());
       return false;
     }
   }
@@ -99,7 +99,7 @@ bool PDController::init(hardware_interface::RobotHW* robot_hw,
   return true;
 }
 
-void PDController::starting(const ros::Time& /* time */) {
+void IDController::starting(const ros::Time& /* time */) {
     // get intial robot state
     franka::RobotState initial_state = state_handle_->getRobotState();
 
@@ -149,7 +149,7 @@ void PDController::starting(const ros::Time& /* time */) {
     notFirstUpdate = false;
 }
 
-void PDController::update(const ros::Time& /*time*/, const ros::Duration& period) {
+void IDController::update(const ros::Time& /*time*/, const ros::Duration& period) {
   // get joint angles and angular velocities
   franka::RobotState robot_state = state_handle_->getRobotState();
   Eigen::Map<Eigen::Matrix<double, 7, 1>> q(robot_state.q.data());
@@ -247,4 +247,4 @@ void PDController::update(const ros::Time& /*time*/, const ros::Duration& period
 
 }  // namespace franka_arm_ros
 
-PLUGINLIB_EXPORT_CLASS(franka_arm_ros::PDController, controller_interface::ControllerBase)
+PLUGINLIB_EXPORT_CLASS(franka_arm_ros::IDController, controller_interface::ControllerBase)

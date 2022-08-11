@@ -1,3 +1,3 @@
 <library path="lib/libfranka_arm_ros_lib">
-    <class name="franka_arm_ros/PDController" type="franka_arm_ros::PDController" base_class_type="controller_interface::ControllerBase" />
+    <class name="franka_arm_ros/IDController" type="franka_arm_ros::IDController" base_class_type="controller_interface::ControllerBase" />
 </library>
