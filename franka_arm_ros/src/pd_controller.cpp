@@ -190,15 +190,28 @@ void PDController::update(const ros::Time& /*time*/, const ros::Duration& period
     acc_desired << 0.0, 0.0, 0.0;
   }
 
-  // get errors
+  // get positional Jacobian
   std::vector<int> row_idx{0, 1, 2};
   std::vector<int> col_idx{0, 1, 2, 3, 4, 5, 6};
-  auto Jp = J(row_idx, col_idx);
+  Jp = J(row_idx, col_idx);
+
+  // get time derivative of positional Jacobian
+  dJ = pinocchio::computeJointJacobiansTimeVariation(model, data, q, dq);
+  dJp = dJ(row_idx, col_idx);
+
+  // get errors
   delta_q = Jp.colPivHouseholderQr().solve(pos_desired - data.oMf[ee_frame_id].translation());
   delta_dq = Jp.colPivHouseholderQr().solve(vel_desired) - dq;
 
+  // get desired joint acceleration
+  ddq_desired = Jp.colPivHouseholderQr().solve(acc_desired - dJp * dq);
+
+  // get mass matrix
+  std::array<double, 49> mass_array = model_handle_->getMass();
+  Eigen::Map<Eigen::Matrix<double, 7, 7>> M(mass_array.data()); 
+
   // compute PD controller
-  Eigen::Matrix<double, 7, 1> torques = coriolis + 10 * delta_q + 5 * delta_dq - 0.5 * dq; 
+  torques = M * ddq_desired + kp_delta_q * delta_q + kd_delta_dq * delta_dq + coriolis - kd_dq * dq; 
 
   std::cout << data.oMf[ee_frame_id].translation() << std::endl;
   std::cout << "*******" << std::endl;

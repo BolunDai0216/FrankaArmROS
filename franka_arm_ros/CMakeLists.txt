@@ -5,6 +5,8 @@ project(franka_arm_ros)
 # add_compile_options(-std=c++11)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# needed to find eigen 3.4.0 which is installed here
 include_directories("/usr/local/include/eigen3")
 
 ## Find catkin macros and libraries

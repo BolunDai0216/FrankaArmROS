@@ -104,6 +104,13 @@ class PDController : public controller_interface::MultiInterfaceController<frank
 
   Eigen::Matrix<double, 7, 1> delta_q;
   Eigen::Matrix<double, 7, 1> delta_dq;
+
+  Eigen::Matrix<double, 3, 7> Jp;
+  Eigen::Matrix<double, 6, 7> dJ;
+  Eigen::Matrix<double, 3, 7> dJp;
+
+  Eigen::Matrix<double, 7, 1> ddq_desired;
+  Eigen::Matrix<double, 7, 1> torques;
 };
 
 }  // namespace franka_arm_ros
