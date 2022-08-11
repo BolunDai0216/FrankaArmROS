@@ -22,6 +22,7 @@
 #include <hardware_interface/robot_hw.h>
 #include <ros/node_handle.h>
 #include <ros/time.h>
+#include <geometry_msgs/Vector3Stamped.h>
 
 #include <franka_example_controllers/JointTorqueComparison.h>
 #include <franka_hw/franka_cartesian_command_interface.h>
@@ -53,6 +54,9 @@ class PDController : public controller_interface::MultiInterfaceController<frank
   
   ros::Duration elapsed_time_;
   std::array<double, 7> initial_pose_{};
+
+  ros::Publisher ee_measured_pub;
+  ros::Publisher ee_desired_pub;
 
   int ee_frame_id;
 
@@ -111,6 +115,9 @@ class PDController : public controller_interface::MultiInterfaceController<frank
 
   Eigen::Matrix<double, 7, 1> ddq_desired;
   Eigen::Matrix<double, 7, 1> torques;
+
+  geometry_msgs::Vector3Stamped ee_desired_pos;
+  geometry_msgs::Vector3Stamped ee_measured_pos;
 };
 
 }  // namespace franka_arm_ros

@@ -7,6 +7,7 @@
 #include <hardware_interface/joint_command_interface.h>
 #include <pluginlib/class_list_macros.h>
 #include <ros/ros.h>   
+#include <geometry_msgs/Vector3Stamped.h>
 
 namespace franka_arm_ros {
 
@@ -90,6 +91,10 @@ bool PDController::init(hardware_interface::RobotHW* robot_hw,
   std::string urdf_filename = "/home/bolun/catkin_ws/src/FrankaArmROS/franka_arm_ros/robots/panda_pin.urdf";
   pinocchio::urdf::buildModel(urdf_filename, model);
   data = pinocchio::Data(model);
+
+  // publish data for rqt_plot
+  ee_measured_pub = node_handle.advertise<geometry_msgs::Vector3Stamped>("/ee_measured_pos", 1000);
+  ee_desired_pub = node_handle.advertise<geometry_msgs::Vector3Stamped>("/ee_desired_pos", 1000);
 
   return true;
 }
@@ -213,13 +218,28 @@ void PDController::update(const ros::Time& /*time*/, const ros::Duration& period
   // compute PD controller
   torques = M * ddq_desired + kp_delta_q * delta_q + kd_delta_dq * delta_dq + coriolis - kd_dq * dq; 
 
-  std::cout << data.oMf[ee_frame_id].translation() << std::endl;
-  std::cout << "*******" << std::endl;
+  // unused printing for debug
+  // std::cout << data.oMf[ee_frame_id].translation() << std::endl;
+  // std::cout << "*******" << std::endl;
 
   // set torque
   for (size_t i = 0; i < 7; ++i) {
     joint_handles_[i].setCommand(torques[i]);
   }
+
+  // publish tracking data to topics
+  ee_desired_pos.vector.x = x_des;
+  ee_desired_pos.vector.y = y_des;
+  ee_desired_pos.vector.z = z_des;
+  ee_desired_pos.header.stamp = ros::Time::now();
+
+  ee_measured_pos.vector.x = data.oMf[ee_frame_id].translation()(0);
+  ee_measured_pos.vector.y = data.oMf[ee_frame_id].translation()(1);
+  ee_measured_pos.vector.z = data.oMf[ee_frame_id].translation()(2);
+  ee_measured_pos.header.stamp = ros::Time::now();
+
+  ee_desired_pub.publish(ee_desired_pos);
+  ee_measured_pub.publish(ee_measured_pos);
 }
 
 }  // namespace franka_arm_ros
