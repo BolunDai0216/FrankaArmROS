@@ -9,6 +9,8 @@
 #include <ros/ros.h>   
 #include <geometry_msgs/Vector3Stamped.h>
 
+namespace pin = pinocchio;
+
 namespace franka_arm_ros {
 
 bool IDController::init(hardware_interface::RobotHW* robot_hw,
@@ -89,8 +91,8 @@ bool IDController::init(hardware_interface::RobotHW* robot_hw,
 
   // build pin_robot from urdf
   std::string urdf_filename = "/home/bolun/catkin_ws/src/FrankaArmROS/franka_arm_ros/robots/panda_pin.urdf";
-  pinocchio::urdf::buildModel(urdf_filename, model);
-  data = pinocchio::Data(model);
+  pin::urdf::buildModel(urdf_filename, model);
+  data = pin::Data(model);
 
   // publish data for rqt_plot
   ee_measured_pub = node_handle.advertise<geometry_msgs::Vector3Stamped>("/ee_measured_pos", 1000);
@@ -109,8 +111,8 @@ void IDController::starting(const ros::Time& /* time */) {
 
     Eigen::Map<Eigen::Matrix<double, 7, 1>> q(initial_state.q.data());
     Eigen::Map<Eigen::Matrix<double, 7, 1>> dq(initial_state.dq.data());
-    pinocchio::forwardKinematics(model, data, q, dq);
-    pinocchio::updateFramePlacements(model, data);
+    pin::forwardKinematics(model, data, q, dq);
+    pin::updateFramePlacements(model, data);
 
     ee_frame_id = model.getFrameId("panda_fingertip");
     
@@ -156,8 +158,8 @@ void IDController::update(const ros::Time& /*time*/, const ros::Duration& period
   Eigen::Map<Eigen::Matrix<double, 7, 1>> dq(robot_state.dq.data());
 
   // update pinocchio robot model
-  pinocchio::forwardKinematics(model, data, q, dq);
-  pinocchio::updateFramePlacements(model, data);
+  pin::forwardKinematics(model, data, q, dq);
+  pin::updateFramePlacements(model, data);
 
   // get time
   if (!notFirstUpdate) {
@@ -172,7 +174,7 @@ void IDController::update(const ros::Time& /*time*/, const ros::Duration& period
   Eigen::Map<Eigen::Matrix<double, 7, 1>> coriolis(coriolis_array.data());
 
   // get Jacobian matrix
-  pinocchio::computeFrameJacobian(model, data, q, ee_frame_id, pinocchio::LOCAL_WORLD_ALIGNED, J);
+  pin::computeFrameJacobian(model, data, q, ee_frame_id, pin::LOCAL_WORLD_ALIGNED, J);
 
   if (t <= terminal_time) {
     position_time_mat << 1.0, t, pow(t, 2.0), pow(t, 3.0), pow(t, 4.0), pow(t, 5.0);
@@ -208,7 +210,7 @@ void IDController::update(const ros::Time& /*time*/, const ros::Duration& period
   Jp = J(row_idx, col_idx);
 
   // get time derivative of positional Jacobian
-  dJ = pinocchio::computeJointJacobiansTimeVariation(model, data, q, dq);
+  dJ = pin::computeJointJacobiansTimeVariation(model, data, q, dq);
   dJp = dJ(row_idx, col_idx);
 
   // get errors
@@ -231,15 +233,17 @@ void IDController::update(const ros::Time& /*time*/, const ros::Duration& period
   }
 
   // publish tracking data to topics
+  ros::Time stamp = ros::Time::now();
+
   ee_desired_pos.vector.x = x_des;
   ee_desired_pos.vector.y = y_des;
   ee_desired_pos.vector.z = z_des;
-  ee_desired_pos.header.stamp = ros::Time::now();
+  ee_desired_pos.header.stamp = stamp;
 
   ee_measured_pos.vector.x = data.oMf[ee_frame_id].translation()(0);
   ee_measured_pos.vector.y = data.oMf[ee_frame_id].translation()(1);
   ee_measured_pos.vector.z = data.oMf[ee_frame_id].translation()(2);
-  ee_measured_pos.header.stamp = ros::Time::now();
+  ee_measured_pos.header.stamp = stamp;
 
   ee_desired_pub.publish(ee_desired_pos);
   ee_measured_pub.publish(ee_measured_pos);
