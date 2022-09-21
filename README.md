@@ -115,3 +115,7 @@ sudo update-grub
 ```
 
 Finally, when starting the machine go to `UEFI firmware settings > Boot Configuration > Enable Secure Boot` and disable secure boot. Now, you should be able to choose the realtime kernel within the `Advanced options for Ubuntu` in the GRUB menu. 
+
+## How to record and visualize data
+
+To record and visualize data the easiest way is to use `rosbag`. Please check `read_bag_files/ReadBagFilesName.ipynb` for details.
