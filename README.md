@@ -93,7 +93,7 @@ first install `fakeroot` using
 sudo apt install fakeroot
 ```
 
-Then finish the remaining steps in the [Franka documentation](https://frankaemika.github.io/docs/installation_linux.html#setting-up-the-real-time-kernel).
+Then finish the remaining steps in the [Franka documentation](https://frankaemika.github.io/docs/installation_linux.html#setting-up-the-real-time-kernel). Make sure to NOT install the `.deb` file that contains `dbg`, this is IMPORTANT!
 
 To make sure that the GRUB menu is set to appear when starting the computer, open `/etc/default/grub` using
 
