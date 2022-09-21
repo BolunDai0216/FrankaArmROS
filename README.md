@@ -77,3 +77,41 @@ optional arguments:
   --shutdown-timeout SHUTDOWN_TIMEOUT
                         DEPRECATED: this argument has no effect.
 ```
+## How to setup realtime kernel
+
+Disclaimer: this worked for my setting, it might not work on yours.
+
+First follow the steps in the [Franka documentation](https://frankaemika.github.io/docs/installation_linux.html#setting-up-the-real-time-kernel), before running
+
+```console
+make -j$(nproc) deb-pkg
+```
+
+first install `fakeroot` using
+
+```console
+sudo apt install fakeroot
+```
+
+Then finish the remaining steps in the [Franka documentation](https://frankaemika.github.io/docs/installation_linux.html#setting-up-the-real-time-kernel).
+
+To make sure that the GRUB menu is set to appear when starting the computer, open `/etc/default/grub` using
+
+```console
+sudo nano /etc/default/grub
+```
+
+and set
+
+```config
+GRUB_TIMEOUT_STYLE=menu
+GRUB_TIMEOUT=10
+```
+
+then save the file, and apply your new settings using
+
+```console
+sudo update-grub
+```
+
+Finally, when starting the machine go to `UEFI firmware settings > Boot Configuration > Enable Secure Boot` and disable secure boot. Now, you should be able to choose the realtime kernel within the `Advanced options for Ubuntu` in the GRUB menu. 
