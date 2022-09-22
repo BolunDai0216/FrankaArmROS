@@ -81,21 +81,19 @@ optional arguments:
 
 Disclaimer: this worked for my setting, it might not work on yours.
 
-First follow the steps in the [Franka documentation](https://frankaemika.github.io/docs/installation_linux.html#setting-up-the-real-time-kernel), before running
+First, follow the steps in the [Franka documentation](https://frankaemika.github.io/docs/installation_linux.html#setting-up-the-real-time-kernel). When deciding which linux kernel version to choose, for Ubuntu 20.04, just choose `v5.9.1`, which is recommended in the documentation. Before running
 
 ```console
 make -j$(nproc) deb-pkg
 ```
 
-first install `fakeroot` using
+install `fakeroot` using
 
 ```console
 sudo apt install fakeroot
 ```
 
-Then finish the remaining steps in the [Franka documentation](https://frankaemika.github.io/docs/installation_linux.html#setting-up-the-real-time-kernel). Make sure to NOT install the `.deb` file that contains `dbg`, this is IMPORTANT!
-
-To make sure that the GRUB menu is set to appear when starting the computer, open `/etc/default/grub` using
+Then, finish the remaining steps in the [Franka documentation](https://frankaemika.github.io/docs/installation_linux.html#setting-up-the-real-time-kernel). Make sure to NOT install the `.deb` file that contains `dbg`, this is very IMPORTANT! To ensure the GRUB menu appears when starting the computer, open `/etc/default/grub` using
 
 ```console
 sudo nano /etc/default/grub
@@ -108,13 +106,13 @@ GRUB_TIMEOUT_STYLE=menu
 GRUB_TIMEOUT=10
 ```
 
-then save the file, and apply your new settings using
+save the file, and apply the new settings using
 
 ```console
 sudo update-grub
 ```
 
-Finally, when starting the machine go to `UEFI firmware settings > Boot Configuration > Enable Secure Boot` and disable secure boot. Now, you should be able to choose the realtime kernel within the `Advanced options for Ubuntu` in the GRUB menu. 
+Finally, reboot the machine, go to `UEFI firmware settings > Boot Configuration > Enable Secure Boot` and disable secure boot. Now, you should be able to choose the realtime kernel after selecting `Advanced options for Ubuntu`. 
 
 ## How to record and visualize data
 
